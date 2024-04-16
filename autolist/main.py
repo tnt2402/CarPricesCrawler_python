@@ -9,7 +9,6 @@ def write_to_csv(data, filename):
         writer.writeheader()
         writer.writerows(data)
 
-# Example usage
 def crawl_pages(url):
     page = 1
     results = []
