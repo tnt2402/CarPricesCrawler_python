@@ -15,20 +15,13 @@ def write_to_csv(data, filename):
         writer.writerows(data)
 
 
-def process_vin(each_vin):
+def process_vin(tmp_vins):
     url = 'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVINValuesBatch/';
 
-    post_fields = {'format': 'json', 'data': each_vin['vin']}
-    print(each_vin['vin'])
+    post_fields = {'format': 'json', 'data': tmp_vins}
     r = requests.post(url, data=post_fields)
     data = json.loads(r.text)
-    tmp_car = each_vin
-    tmp_car['displacement_l'] = data['Results'][0]['DisplacementL']
-    tmp_car['drive_type'] = data['Results'][0]['DriveType']
-    tmp_car['engine_model'] = data['Results'][0]['EngineModel']
-    tmp_car['fuel_type_primary'] = data['Results'][0]['FuelTypePrimary']
-    tmp_car['doors'] = data['Results'][0]['Doors']
-    return tmp_car
+    return data
 
 
 # Open the CSV file
@@ -61,7 +54,15 @@ with open('merged_data.csv', 'r') as file:
             vin_list.append(tmp_vin)
 
 # Process VINs in parallel
+n = 50
+all_vin_results = []
+for i in tqdm(range(0, len(vin_list), n)):
+    tmp_vins = '; '.join(tmp_vin['vin'] for tmp_vin in vin_list[i:i+n])
+    print(tmp_vins + '\n')
+    result = process_vin(tmp_vins)  
+    all_vin_results = (result['Results'])
+    print(len(all_vin_results))
+    break
 
-for i in 
 
-write_to_csv(results, "merged_data_with_vin_data.csv")
+write_to_csv(all_vin_results, "merged_data_with_vin_data.csv")
