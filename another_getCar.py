@@ -68,22 +68,25 @@ for i in tqdm(range(0, len(vin_list), n)):
     # print(tmp_vins + '\n')
     result = process_vin(tmp_vins)  
     all_vin_results.extend((result['Results']))
+# print(all_vin_results)
 
-print(len(all_vin_results))
 
 # os.exit(0)
-print(len(vin_list))
-print(len(all_vin_results))
     
 all_car = []
-for i, each_car in enumerate(vin_list):
-    tmp_car = each_car
-    tmp_car['displacement_l'] = all_vin_results[i]['DisplacementL']
-    tmp_car['drive_type'] = all_vin_results[i]['DriveType']
-    tmp_car['engine_model'] = all_vin_results[i]['EngineModel']
-    tmp_car['fuel_type_primary'] = all_vin_results[i]['DisplacementL']
-    tmp_car['doors'] = all_vin_results[i]['Doors']
-    all_car.append(tmp_car)
+if len(all_vin_results) == len(vin_list):
+    for i, each_car in enumerate(vin_list):
+        tmp_car = each_car
+        tmp_car['displacement_l'] = all_vin_results[i]['DisplacementL']
+        tmp_car['drive_type'] = all_vin_results[i]['DriveType']
+        tmp_car['engine_model'] = all_vin_results[i]['EngineCylinders']
+        tmp_car['fuel_type_primary'] = all_vin_results[i]['FuelTypePrimary']
+        tmp_car['fuel_type_secondary'] = all_vin_results[i]['FuelTypeSecondary']
+        tmp_car['doors'] = all_vin_results[i]['Doors']
+        tmp_car['seat_rows'] = all_vin_results[i]['SeatRows']
+        tmp_car['seats'] = all_vin_results[i]['Seats']
+        
+        all_car.append(tmp_car)
 
-print(all_car)
 write_to_csv(all_car, "merged_data_with_vin_data.csv")
+write_to_csv(all_vin_results, "vin_data.csv")
