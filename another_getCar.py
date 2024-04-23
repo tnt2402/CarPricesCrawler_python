@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import requests
 from tqdm import tqdm
 from joblib import Parallel, delayed
@@ -62,12 +63,15 @@ with open('merged_data.csv', 'r') as file:
 n = 50
 all_vin_results = []
 for i in tqdm(range(0, len(vin_list), n)):
+# for i in tqdm(range(2)):
     tmp_vins = '; '.join(tmp_vin['vin'] for tmp_vin in vin_list[i:i+n])
     # print(tmp_vins + '\n')
     result = process_vin(tmp_vins)  
-    all_vin_results.append((result['Results']))
+    all_vin_results.extend((result['Results']))
 
+print(len(all_vin_results))
 
+# os.exit(0)
 print(len(vin_list))
 print(len(all_vin_results))
     
