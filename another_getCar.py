@@ -16,12 +16,17 @@ def write_to_csv(data, filename):
 
 
 def process_vin(tmp_vins):
-    url = 'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVINValuesBatch/';
+    try:
+        url = 'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVINValuesBatch/';
 
-    post_fields = {'format': 'json', 'data': tmp_vins}
-    r = requests.post(url, data=post_fields)
-    data = json.loads(r.text)
-    return data
+        post_fields = {'format': 'json', 'data': tmp_vins}
+        r = requests.post(url, data=post_fields)
+        
+        data = json.loads(r.text)
+        return data
+
+    except:
+        print(r)        
 
 
 # Open the CSV file
@@ -58,11 +63,23 @@ n = 50
 all_vin_results = []
 for i in tqdm(range(0, len(vin_list), n)):
     tmp_vins = '; '.join(tmp_vin['vin'] for tmp_vin in vin_list[i:i+n])
-    print(tmp_vins + '\n')
+    # print(tmp_vins + '\n')
     result = process_vin(tmp_vins)  
-    all_vin_results = (result['Results'])
-    print(len(all_vin_results))
-    break
+    all_vin_results.append((result['Results']))
 
 
-write_to_csv(all_vin_results, "merged_data_with_vin_data.csv")
+print(len(vin_list))
+print(len(all_vin_results))
+    
+all_car = []
+for i, each_car in enumerate(vin_list):
+    tmp_car = each_car
+    tmp_car['displacement_l'] = all_vin_results[i]['DisplacementL']
+    tmp_car['drive_type'] = all_vin_results[i]['DriveType']
+    tmp_car['engine_model'] = all_vin_results[i]['EngineModel']
+    tmp_car['fuel_type_primary'] = all_vin_results[i]['DisplacementL']
+    tmp_car['doors'] = all_vin_results[i]['Doors']
+    all_car.append(tmp_car)
+
+print(all_car)
+write_to_csv(all_car, "merged_data_with_vin_data.csv")
